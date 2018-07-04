@@ -12,9 +12,12 @@
   "author": "Neo Chang <chang.0022@163.com>",
   "license": "MIT",
   "dependencies": {
+    "@koa/cors": "2",
     "apollo-server-koa": "^1.3.6",
     "graphql": "^0.13.2",
     "koa": "^2.5.1",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
     "mongoose": "^5.2.1"
   }
 }
