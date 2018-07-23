@@ -12,7 +12,7 @@ const addAuthorMutation = gql`
     }
   }
 `
-
+@graphql(addAuthorMutation)
 class AddAuthor extends Component {
   state = {
     name: '',
@@ -85,4 +85,4 @@ class AddAuthor extends Component {
   }
 }
 
-export default graphql(addAuthorMutation)(AddAuthor)
+export default AddAuthor

@@ -60,6 +60,8 @@ const getBooksQuery = gql`
   }
 `
 
+@withStyles(styles)
+@graphql(getBooksQuery)
 class BookList extends Component {
   state = {
     open: false
@@ -134,4 +136,4 @@ class BookList extends Component {
   }
 }
 
-export default withStyles(styles)(graphql(getBooksQuery)(BookList))
+export default BookList
