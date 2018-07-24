@@ -49,7 +49,7 @@ class Header extends React.Component {
                 图书列表
               </Link>
             </Typography>
-            <Button variant="raised">添加图书</Button>
+            <Button variant="raised" component={Link} to="/addBook">添加图书</Button>
             <Button variant="raised" color="primary" className={classes.button} component={Link} to="/addAuthor">
               添加作者
             </Button>

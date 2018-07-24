@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { gql } from 'apollo-boost'
-import { graphql } from 'react-apollo'
+import { graphql, compose } from 'react-apollo'
 import { withStyles } from '@material-ui/core/styles'
 import {
   Grid,
@@ -59,24 +59,53 @@ const getBooksQuery = gql`
     }
   }
 `
+const deleteBookById = gql`
+  mutation($id: ID!) {
+    deleteBook(id: $id) {
+      id
+    }
+  }
+`
 
 @withStyles(styles)
-@graphql(getBooksQuery)
+@compose(
+  graphql(getBooksQuery),
+  graphql(deleteBookById)
+)
 class BookList extends Component {
   state = {
-    open: false
+    open: false,
+    bookId: ''
   }
 
-  handleClickOpen = () => {
-    this.setState({ open: true })
+  handleClickOpen = id => {
+    this.setState({ open: true, bookId: id })
   }
 
   handleClose = () => {
     this.setState({ open: false })
   }
 
+  deleteHandle = () => {
+    this.setState({ open: false })
+    this.props
+      .mutate({
+        variables: {
+          id: this.state.bookId
+        }
+      })
+      .then(({ data }) => {
+        console.log('got data', data)
+      })
+      .catch(error => {
+        console.log('there was an error sending the query', error)
+      })
+  }
+
   render() {
     const { data, classes } = this.props
+
+    console.log(data)
     const books = data.books || []
     return (
       <Layout>
@@ -102,7 +131,7 @@ class BookList extends Component {
                       <CustomTableCell>{i.author.name}</CustomTableCell>
                       <CustomTableCell>
                         <IconButton aria-label="Delete">
-                          <Icon onClick={this.handleClickOpen}>delete</Icon>
+                          <Icon onClick={() => this.handleClickOpen(i.id)}>delete</Icon>
                         </IconButton>
                       </CustomTableCell>
                     </TableRow>
@@ -124,7 +153,7 @@ class BookList extends Component {
                 <Button onClick={this.handleClose} color="secondary">
                   取消
                 </Button>
-                <Button onClick={this.handleClose} color="primary" autoFocus>
+                <Button onClick={this.deleteHandle} color="primary" autoFocus>
                   确定
                 </Button>
               </DialogActions>

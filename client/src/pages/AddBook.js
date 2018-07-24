@@ -1,22 +1,37 @@
 import React, { Component } from 'react'
 import { gql } from 'apollo-boost'
-import { graphql } from 'react-apollo'
-import { Typography, Paper, Button, TextField } from '@material-ui/core'
+import { graphql, compose } from 'react-apollo'
+import { Typography, Paper, Button, TextField, MenuItem } from '@material-ui/core'
 import Layout from '../components/Layout'
 
-const addAuthorMutation = gql`
-  mutation($name: String!, $age: Int!) {
-    addAuthor(name: $name, age: $age) {
+const addBookMutation = gql`
+  mutation($name: String!, $genre: String!, $id: ID!) {
+    addBook(name: $name, genre: $genre, authorId: $id) {
       name
-      age
+      genre
+      author {
+        id
+      }
     }
   }
 `
-@graphql(addAuthorMutation)
+const getAuthorsQuery = gql`
+  {
+    authors {
+      id
+      name
+    }
+  }
+`
+@compose(
+  graphql(getAuthorsQuery),
+  graphql(addBookMutation)
+)
 class AddAuthor extends Component {
   state = {
     name: '',
-    age: ''
+    genre: '',
+    id: ''
   }
 
   getInputHandler = key => {
@@ -26,11 +41,13 @@ class AddAuthor extends Component {
   }
 
   onSubmit = () => {
+    console.log(this.state)
     this.props
       .mutate({
         variables: {
           name: this.state.name,
-          age: this.state.age
+          genre: this.state.genre,
+          id: this.state.id
         }
       })
       .then(({ data }) => {
@@ -42,6 +59,9 @@ class AddAuthor extends Component {
   }
 
   render() {
+    const { data } = this.props
+    const authors = data.authors || []
+
     return (
       <Layout>
         <Typography gutterBottom variant="headline" component="h2">
@@ -53,7 +73,7 @@ class AddAuthor extends Component {
               fullWidth
               required
               id="name"
-              label="姓名"
+              label="书名"
               value={this.state.name}
               onChange={this.getInputHandler('name')}
               margin="normal"
@@ -61,12 +81,28 @@ class AddAuthor extends Component {
             <TextField
               fullWidth
               required
-              id="age"
-              label="年龄"
-              value={this.state.age}
-              onChange={this.getInputHandler('age')}
+              id="genre"
+              label="类别"
+              value={this.state.genre}
+              onChange={this.getInputHandler('genre')}
               margin="normal"
             />
+            <TextField
+              fullWidth
+              required
+              id="id"
+              select
+              label="作者"
+              value={this.state.id}
+              onChange={this.getInputHandler('id')}
+              margin="normal"
+            >
+              {authors.map(option => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </TextField>
           </form>
           <Button variant="raised" size="large" color="primary" onClick={this.onSubmit}>
             保存
