@@ -41,7 +41,8 @@ class AddAuthor extends Component {
   }
 
   onSubmit = () => {
-    console.log(this.state)
+    // console.log(this.state)
+    console.log(this.props)
     this.props
       .mutate({
         variables: {
@@ -52,6 +53,7 @@ class AddAuthor extends Component {
       })
       .then(({ data }) => {
         console.log('got data', data)
+        this.props.history.push('/')
       })
       .catch(error => {
         console.log('there was an error sending the query', error)

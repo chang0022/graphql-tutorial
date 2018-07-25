@@ -75,7 +75,12 @@ const deleteBookById = gql`
 class BookList extends Component {
   state = {
     open: false,
-    bookId: ''
+    bookId: '',
+    books: []
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({ books: nextProps.data.books })
   }
 
   handleClickOpen = id => {
@@ -87,7 +92,6 @@ class BookList extends Component {
   }
 
   deleteHandle = () => {
-    this.setState({ open: false })
     this.props
       .mutate({
         variables: {
@@ -96,17 +100,22 @@ class BookList extends Component {
       })
       .then(({ data }) => {
         console.log('got data', data)
+        this.setState({
+          books: this.state.books.filter(elem => elem.id !== data.deleteBook.id)
+        })
       })
       .catch(error => {
         console.log('there was an error sending the query', error)
+      })
+      .finally(() => {
+        this.setState({ open: false })
       })
   }
 
   render() {
     const { data, classes } = this.props
-
+    let { books } = this.state
     console.log(data)
-    const books = data.books || []
     return (
       <Layout>
         <Grid container spacing={16}>

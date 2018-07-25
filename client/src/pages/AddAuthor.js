@@ -35,6 +35,7 @@ class AddAuthor extends Component {
       })
       .then(({ data }) => {
         console.log('got data', data)
+        this.props.history.push('/')
       })
       .catch(error => {
         console.log('there was an error sending the query', error)
